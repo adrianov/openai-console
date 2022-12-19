@@ -45,7 +45,7 @@ def wrap_text(text, max_width):
         if len(line) <= max_width:
             result.append(line)
         else:
-            words = re.findall(r"\s+|\S+", text)
+            words = re.findall(r"\s+|\S+", line)
             current_line = ""
             for word in words:
                 if len(current_line) + len(word) > max_width:
