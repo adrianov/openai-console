@@ -13,8 +13,9 @@ pip install openai prompt_toolkit pygments
 ## Usage
 
 ```
-./davinci.py
+OPENAI_ACCESS_TOKEN=your_access_token ./davinci.py
 ```
+The access token is available on https://beta.openai.com/
 
 ## License
 
