@@ -17,7 +17,7 @@ OPENAI_ACCESS_TOKEN=your_access_token ./davinci.py
 ```
 The access token is available on https://beta.openai.com/
 
-##Example
+## Example
 ```
 Q: Write a poem about great Peter Adrianov who wrote a console wrapper for OpenAI bot.
 A:
