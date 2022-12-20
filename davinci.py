@@ -9,11 +9,13 @@ from prompt_toolkit import PromptSession
 import pygments
 from pygments.lexers import guess_lexer
 from pygments.formatters.terminal import TerminalFormatter
+import logging
 
 openai.api_key = os.environ.get("OPENAI_ACCESS_TOKEN")
 MODEL_ENGINE = "text-davinci-003"
 # MODEL_ENGINE = "code-davinci-002"
 
+logging.basicConfig(filename='davinci.log', level=logging.INFO)
 
 def generate_response(prompt_text):
     """Generate response using OpenAI API"""
@@ -62,7 +64,7 @@ def wrap_text(text, max_width):
 session = PromptSession()
 
 print(f"Session with {MODEL_ENGINE} model.")
-print("Press Esc, Enter to finish multiline input.\n")
+print("Press Esc, Enter to finish multiline input. Empty string to exit.\n")
 
 while True:
     question = session.prompt("Q: ", multiline=True)
@@ -70,6 +72,8 @@ while True:
     if not question.strip():
         break
 
+    logging.info("Q: %s\n", question)
     print("A:\n", end="")
     response = generate_response(question)
     print_answer(response)
+    logging.info("A:\n%s\n\n", response)
