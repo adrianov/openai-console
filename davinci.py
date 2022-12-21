@@ -4,12 +4,13 @@
 
 import os
 import re
+import logging
 import openai
 from prompt_toolkit import PromptSession
+from whats_that_code.election import guess_language_all_methods
 import pygments
-from pygments.lexers import guess_lexer
+from pygments.lexers import guess_lexer, find_lexer_class
 from pygments.formatters.terminal import TerminalFormatter
-import logging
 
 openai.api_key = os.environ.get("OPENAI_ACCESS_TOKEN")
 MODEL_ENGINE = "text-davinci-003"
@@ -25,10 +26,10 @@ def generate_response(prompt_text):
 
     return completions.choices[0].text
 
-
 def pygmentize(text):
     """Pygmentize the given text"""
-    lexer = guess_lexer(text)
+    lexer_class = find_lexer_class(guess_language_all_methods(text).capitalize())
+    lexer = lexer_class() if lexer_class is not None else guess_lexer(text)
     return pygments.highlight(text, lexer, TerminalFormatter())
 
 
