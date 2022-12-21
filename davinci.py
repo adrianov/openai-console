@@ -16,7 +16,7 @@ openai.api_key = os.environ.get("OPENAI_ACCESS_TOKEN")
 MODEL_ENGINE = "text-davinci-003"
 # MODEL_ENGINE = "code-davinci-002"
 
-logging.basicConfig(filename='davinci.log', level=logging.INFO)
+logging.basicConfig(filename=os.path.expanduser('~/davinci.log'), level=logging.INFO)
 
 def generate_response(prompt_text):
     """Generate response using OpenAI API"""
@@ -28,10 +28,13 @@ def generate_response(prompt_text):
 
 def pygmentize(text):
     """Pygmentize the given text"""
-    lexer_class = find_lexer_class(guess_language_all_methods(text).capitalize())
-    lexer = lexer_class() if lexer_class is not None else guess_lexer(text)
+    language = guess_language_all_methods(text)
+    try:
+        lexer_class = get_lexer_by_name(language)
+    except pygments.util.ClassNotFound:
+        lexer_class = None
+    lexer = lexer_class() if lexer_class else guess_lexer(text)
     return pygments.highlight(text, lexer, TerminalFormatter())
-
 
 def print_answer(answer):
     """Print the answer"""
