@@ -77,5 +77,5 @@ while True:
     logging.info("Q: %s\n", question)
     print("A:\n", end="")
     response = generate_response(question)
-    print_answer(response)
     logging.info("A:\n%s\n\n", response)
+    print_answer(response)
