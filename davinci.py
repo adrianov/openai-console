@@ -37,7 +37,7 @@ def pygmentize(text):
 def print_answer(answer):
     """Print the answer"""
     width, _ = os.get_terminal_size()
-    print(pygmentize(wrap_text(answer, width)))
+    print(wrap_text(pygmentize(answer), width))
     print("\n")
 
 
@@ -52,7 +52,8 @@ def wrap_text(text, max_width):
             words = re.findall(r"\s+|\S+", line)
             current_line = ""
             for word in words:
-                if len(current_line) + len(word) > max_width:
+                # Exclude ANSI color codes from a word length
+                if len(re.sub(r'\x1b[^m]*m', '', current_line + word)) > max_width:
                     if current_line:
                         result.append(current_line)
                     current_line = word.strip()
