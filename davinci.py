@@ -26,7 +26,7 @@ def generate_response(prompt_text):
         )
         response = completions.choices[0].text
     except openai.error.OpenAIError as e:
-        response = f"{e.__class__.__name__}: {e}"
+        response = f"\033[31m{e.__class__.__name__}\033[0m: {e}"
 
     return response
 
