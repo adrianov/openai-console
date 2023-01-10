@@ -50,22 +50,29 @@ def wrap_text(text, max_width):
     lines = text.split("\n")
     result = []
     for line in lines:
-        if len(line) <= max_width:
+        if len_without_ansi(line) <= max_width:
             result.append(line)
         else:
             words = re.findall(r"\s+|\S+", line)
             current_line = ""
+            line_len = 0
             for word in words:
-                # Exclude ANSI color codes from a word length
-                if len(re.sub(r'\x1b[^m]*m', '', current_line + word)) > max_width:
+                word_len = len_without_ansi(word)
+                if line_len + word_len > max_width:
                     if current_line:
                         result.append(current_line)
                     current_line = word.strip()
+                    line_len = len_without_ansi(current_line)
                 else:
                     current_line += word
+                    line_len += word_len
             if current_line:
                 result.append(current_line)
     return "\n".join(result)
+
+def len_without_ansi(text):
+    """Return the length of the given text without ANSI codes"""
+    return len(re.sub(r'\x1b[^m]*m', '', text))
 
 
 session = PromptSession()
