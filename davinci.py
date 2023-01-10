@@ -20,11 +20,15 @@ logging.basicConfig(filename=os.path.expanduser('~/davinci.log'), level=logging.
 
 def generate_response(prompt_text):
     """Generate response using OpenAI API"""
-    completions = openai.Completion.create(
-        engine=MODEL_ENGINE, prompt=prompt_text, max_tokens=1024, n=1, temperature=0.5
-    )
+    try:
+        completions = openai.Completion.create(
+            engine=MODEL_ENGINE, prompt=prompt_text, max_tokens=1024, n=1, temperature=0.5
+        )
+        response = completions.choices[0].text
+    except openai.error.OpenAIError as e:
+        response = f"{e.__class__.__name__}: {e}"
 
-    return completions.choices[0].text
+    return response
 
 def pygmentize(text):
     """Pygmentize the given text"""
