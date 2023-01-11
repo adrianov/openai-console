@@ -32,6 +32,8 @@ def generate_response(prompt_text):
 
 def pygmentize(text):
     """Pygmentize the given text"""
+    if '\x1b[' in text:
+        return text
     try:
         lexer = get_lexer_by_name(guess_language_all_methods(text))
     except pygments.util.ClassNotFound:
