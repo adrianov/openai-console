@@ -21,6 +21,7 @@ logging.basicConfig(filename=os.path.expanduser('~/davinci.log'), level=logging.
 def generate_response(prompt_text):
     """Generate response using OpenAI API"""
     try:
+        prompt_text = prepare_question(prompt_text)
         completions = openai.Completion.create(
             engine=MODEL_ENGINE, prompt=prompt_text, max_tokens=1024, n=1, temperature=0.5
         )
@@ -29,6 +30,39 @@ def generate_response(prompt_text):
         response = f"\033[31m{e.__class__.__name__}\033[0m: {e}"
 
     return response
+
+def prepare_question(question):
+    """Prepare the question. Inline file contents to the question"""
+    if is_search_needed(question) and are_search_utils_installed():
+        search_data = search_question(question)
+        return f'"""\n{search_data}\n"""\n{question}"'
+    return question
+
+def is_search_needed(question):
+    if '\n' in question.strip():
+        return False
+    search_words = r'search|today|current|now|up to date|recent|latest|найди|сегодня|сейчас|текущий|актуальный'
+    return bool(re.search(search_words, question, flags=re.IGNORECASE))
+
+def are_search_utils_installed():
+    """Check if ddgr is installed"""
+    import shutil
+    return shutil.which('ddgr')
+
+def search_question(query):
+    """Search the given query using ddgr"""
+    import shlex
+    import subprocess
+    import json
+    command = f'ddgr -n 10 --json {shlex.quote(query)}'
+    output = subprocess.check_output(command, shell=True).decode('utf-8')
+    results = []
+    decoded_output = json.loads(output)
+    for result in decoded_output:
+        results.append(result['abstract'])
+    print(f"Search results:\n")
+    print_answer("\n".join(results))
+    return "\n".join(results)
 
 def pygmentize(text):
     """Pygmentize the given text"""
