@@ -60,8 +60,8 @@ def search_question(query):
     decoded_output = json.loads(output)
     for result in decoded_output:
         results.append(result['abstract'])
-    print(f"Search results:\n")
-    print_answer("\n".join(results))
+#     print(f"Search results:\n")
+#     print_answer("\n".join(results))
     return "\n".join(results)
 
 def pygmentize(text):
