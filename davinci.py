@@ -123,7 +123,10 @@ while True:
         break
 
     logging.info("Q: %s\n", question)
-    print("A:\n", end="")
+    if is_search_needed(question) and are_search_utils_installed():
+        print("A + Internet search:\n", end="")
+    else:
+        print("A:\n", end="")
     response = generate_response(question)
     logging.info("A:\n%s\n\n", response)
     print_answer(response)
