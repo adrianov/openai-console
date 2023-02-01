@@ -41,7 +41,7 @@ def prepare_question(question):
 def is_search_needed(question):
     if '\n' in question.strip():
         return False
-    search_words = r'search|today|current|now|up to date|recent|latest|найди|сегодня|сейчас|текущий|актуальный'
+    search_words = r'search|find|today|current|now|up to date|recent|latest|найди|найти|сегодня|сейчас|текущий|актуальный'
     return bool(re.search(search_words, question, flags=re.IGNORECASE))
 
 def are_search_utils_installed():
