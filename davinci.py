@@ -6,6 +6,7 @@ import os
 import re
 import logging
 import openai
+from sys import getsizeof
 from duckpy import Client
 from prompt_toolkit import PromptSession
 from whats_that_code.election import guess_language_all_methods
@@ -36,7 +37,7 @@ def prepare_question(question):
     """Prepare the question. Inline file contents to the question"""
     if is_search_needed(question):
         search_data = search_question(question)
-        return f'"""\n{search_data}\n"""\n{question}"'
+        return f'"""\n{search_data}"""\n{question}"'
     return question
 
 def is_search_needed(question):
@@ -48,13 +49,13 @@ def is_search_needed(question):
     return bool(re.search(search_words, question, flags=re.IGNORECASE))
 
 def search_question(query):
-    """Search the given query using ddgr"""
+    """Search the given query using DuckDuckGo"""
     client = Client()
     results = client.search(query)
     answers = ""
     for result in results:
         answers += result.description + "\n"
-        if len(answers.encode('utf-8')) > 4500:
+        if getsizeof(answers) > 4600:
             break
     return answers
 
