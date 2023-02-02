@@ -7,7 +7,7 @@ A Python3 script for using OpenAI's API from the console. It is an advanced chat
 Install the dependencies using pip:
 
 ```
-pip install openai prompt_toolkit pygments whats_that_code
+pip install openai prompt_toolkit pygments whats_that_code duckpy
 ```
 
 ## Usage

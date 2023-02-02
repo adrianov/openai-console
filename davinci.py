@@ -6,6 +6,7 @@ import os
 import re
 import logging
 import openai
+from duckpy import Client
 from prompt_toolkit import PromptSession
 from whats_that_code.election import guess_language_all_methods
 import pygments
@@ -33,7 +34,7 @@ def generate_response(prompt_text):
 
 def prepare_question(question):
     """Prepare the question. Inline file contents to the question"""
-    if is_search_needed(question) and are_search_utils_installed():
+    if is_search_needed(question):
         search_data = search_question(question)
         return f'"""\n{search_data}\n"""\n{question}"'
     return question
@@ -46,25 +47,16 @@ def is_search_needed(question):
     search_words = r'search|find|today|current|now|up to date|recent|latest|news|найди|найти|сегодн|сейчас|текущ|актуальн|новости'
     return bool(re.search(search_words, question, flags=re.IGNORECASE))
 
-def are_search_utils_installed():
-    """Check if ddgr is installed"""
-    import shutil
-    return shutil.which('ddgr')
-
 def search_question(query):
     """Search the given query using ddgr"""
-    import shlex
-    import subprocess
-    import json
-    command = f'ddgr -n 10 --json {shlex.quote(query)}'
-    output = subprocess.check_output(command, shell=True).decode('utf-8')
-    results = []
-    decoded_output = json.loads(output)
-    for result in decoded_output:
-        results.append(result['abstract'])
-#     print(f"Search results:\n")
-#     print_answer("\n".join(results))
-    return "\n".join(results)
+    client = Client()
+    results = client.search(query)
+    answers = ""
+    for result in results:
+        answers += result.description + "\n"
+        if len(answers.encode('utf-8')) > 4500:
+            break
+    return answers
 
 def pygmentize(text):
     """Pygmentize the given text"""
@@ -125,7 +117,7 @@ while True:
         break
 
     logging.info("Q: %s\n", question)
-    if is_search_needed(question) and are_search_utils_installed():
+    if is_search_needed(question):
         print("A + Internet search:\n", end="")
     else:
         print("A:\n", end="")
