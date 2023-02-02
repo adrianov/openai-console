@@ -41,6 +41,8 @@ def prepare_question(question):
 def is_search_needed(question):
     if '\n' in question.strip():
         return False
+    if re.search(r'\b[A-Z]{3}\b|\$|£|€|₽', question):
+        return True
     search_words = r'search|find|today|current|now|up to date|recent|latest|news|найди|найти|сегодн|сейчас|текущ|актуальн|новости'
     return bool(re.search(search_words, question, flags=re.IGNORECASE))
 
