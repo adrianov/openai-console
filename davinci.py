@@ -64,6 +64,7 @@ def search_question(query):
         answers += result.description + "\n"
         if getsizeof(answers) > 4600:
             break
+    logging.info("Search answers:\n%s", answers)
     return answers
 
 def pygmentize(text):
