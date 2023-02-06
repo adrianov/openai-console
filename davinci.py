@@ -36,31 +36,24 @@ def query_ai(prompt_text):
     return completions.choices[0].text
 
 def ask_question(question):
-    """Ask the given question. Use heuristic if the answer with search would be better"""
-    response = query_ai(question)
+    """Ask the given question."""
     if is_search_needed(question):
         search_data = search_question(question)
         prompt_text = f'"""\n{search_data}"""\n{question}"'
-        answer_with_search = query_ai(prompt_text)
-
-        search_tells_the_same = query_ai(
-            f'Are these answers similar, answer true or false?\n"1. {answer_with_search}"\n"2. {response}"'
-        )
-        if not search_tells_the_same.lower().strip() == "true":
-            response = answer_with_search
+        response = query_ai(prompt_text)
+    else:
+        response = query_ai(question)
 
     return response
 
 def is_search_needed(question):
     """Check if the search is needed"""
-    if not '\n' in question.strip():
+    if '\n' in question.strip():
+        return False
+    if re.search(r'\b[A-Z]{3}\b|\$|£|€|₽', question):
         return True
-#     if '\n' in question.strip():
-#         return False
-#     if re.search(r'\b[A-Z]{3}\b|\$|£|€|₽', question):
-#         return True
-#     search_words = r'search|find|today|current|now|up to date|recent|latest|news|найди|найти|сегодн|сейчас|текущ|актуальн|новости'
-#     return bool(re.search(search_words, question, flags=re.IGNORECASE))
+    search_words = r'search|find|today|current|now|up to date|recent|latest|news|найди|найти|сегодн|сейчас|текущ|актуальн|новости'
+    return bool(re.search(search_words, question, flags=re.IGNORECASE))
 
 def search_question(query):
     """Search the given query using DuckDuckGo"""
