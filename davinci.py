@@ -48,7 +48,7 @@ def ask_question(question):
 
 def is_arithmetic(string):
     # Check if the string contains only numbers and arithmetic operators
-    if not all(c in '0123456789+-*/() \n' for c in string):
+    if not all(c in '0123456789+-*/(). \n' for c in string):
         return False
 
     # Calculate the result of the arithmetic expression
