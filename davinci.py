@@ -37,14 +37,28 @@ def query_ai(prompt_text):
 
 def ask_question(question):
     """Ask the given question."""
-    if is_search_needed(question):
+    if response := is_arithmetic(question):
+        return str(response)
+    elif is_search_needed(question):
         search_data = search_question(question)
         prompt_text = f'"""\n{search_data}"""\n{question}"'
-        response = query_ai(prompt_text)
+        return query_ai(prompt_text)
     else:
-        response = query_ai(question)
+        return query_ai(question)
 
-    return response
+def is_arithmetic(string):
+    # Check if the string contains only numbers and arithmetic operators
+    if not all(c in '0123456789+-*/() \n' for c in string):
+        return False
+
+    # Calculate the result of the arithmetic expression
+    try:
+        result = eval(string)
+    except:
+        return False
+
+    # Return the result
+    return result
 
 def is_search_needed(question):
     """Check if the search is needed"""
