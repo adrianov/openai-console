@@ -30,10 +30,17 @@ def generate_response(prompt_text):
     return response
 
 def query_ai(prompt_text):
-    completions = openai.Completion.create(
-        engine=MODEL_ENGINE, prompt=prompt_text, max_tokens=1024, n=1, temperature=0.5
-    )
-    return completions.choices[0].text
+    for _ in range(3):
+        try:
+            completions = openai.Completion.create(
+                engine=MODEL_ENGINE, prompt=prompt_text, max_tokens=1024, n=1, temperature=0.5
+            )
+            return completions.choices[0].text
+        except openai.error.OpenAIError as e:
+            if not isinstance(e, openai.error.RateLimitError):
+                raise e
+            time.sleep(5)
+    raise e
 
 def ask_question(question):
     """Ask the given question."""
