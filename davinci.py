@@ -44,16 +44,20 @@ def query_ai(prompt_text):
 
 def ask_question(question):
     """Ask the given question."""
-    if response := is_arithmetic(question):
+    if response := calculate(question):
         return str(response)
-    elif is_search_needed(question):
+
+    if response := solve_eq(question):
+        return str(response)
+
+    if is_search_needed(question):
         search_data = search_question(question)
         prompt_text = f'"""\n{search_data}"""\n{question}"'
         return query_ai(prompt_text)
-    else:
-        return query_ai(question)
 
-def is_arithmetic(string):
+    return query_ai(question)
+
+def calculate(string):
     # Check if the string contains only numbers and arithmetic operators
     if not all(c in '0123456789+-*/(). \n' for c in string):
         return False
@@ -66,6 +70,19 @@ def is_arithmetic(string):
 
     # Return the result
     return result
+
+def solve_eq(eq):
+    if '=' not in eq:
+        return False
+    from sympy import Eq, sympify, solve
+    try:
+        lhs, rhs = eq.split('=')
+        lhs = sympify(lhs)
+        rhs = sympify(rhs)
+        solution = solve(Eq(lhs, rhs))
+        return solution
+    except:
+        return False
 
 def is_search_needed(question):
     """Check if the search is needed"""
