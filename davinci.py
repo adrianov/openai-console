@@ -6,6 +6,7 @@ import os
 import re
 import logging
 import openai
+import time
 from sys import getsizeof
 from duckpy import Client
 from prompt_toolkit import PromptSession
