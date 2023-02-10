@@ -51,6 +51,9 @@ def ask_question(question):
     if response := solve_eq(question):
         return str(response)
 
+    if is_translation(question):
+        return translate(question)
+
     if is_search_needed(question):
         search_data = search_question(question)
         prompt_text = f'"""\n{search_data}"""\n{question}"'
@@ -91,8 +94,25 @@ def is_search_needed(question):
         return False
     if re.search(r'\b[A-Z]{3}\b|\$|£|€|₽', question):
         return True
-    search_words = r'search|find|today|current|now|up to date|recent|latest|news|найди|найти|сегодн|сейчас|текущ|актуальн|новости'
+    search_words = r'search|find|today|current|now|up to date|recent|latest|news|найди|найти|сегодн|сейчас|текущ|актуальн|новост'
     return bool(re.search(search_words, question, flags=re.IGNORECASE))
+
+def is_translation(question):
+    return is_program_installed('trans') and bool(re.search(r'^(trans|перев)', question.strip(), flags=re.IGNORECASE))
+
+def is_program_installed(program_name):
+    """Check whether program_name is installed."""
+    import shutil
+    return shutil.which(program_name) is not None
+
+def translate(question):
+    import subprocess
+    params = ['trans', '-b']
+    if ' ru' in question or ' Ru' in question:
+        params.append(':ru')
+    params.append(re.sub(r'\btrans\w*(\s+to(\s+\w+)?)?|\bперев\w+', '', question, flags=re.IGNORECASE).strip())
+    result = subprocess.run(params, stdout=subprocess.PIPE)
+    return result.stdout.decode('utf-8')
 
 def search_question(query):
     """Search the given query using DuckDuckGo"""
