@@ -108,9 +108,11 @@ def is_program_installed(program_name):
 def translate(question):
     import subprocess
     params = ['trans', '-b']
-    if ' ru' in question or ' Ru' in question:
+    question = re.sub(r'\b(trans|перев)\w*\s+', '', question, flags=re.IGNORECASE).strip()
+    # If no Russian letters, translate to Russian
+    if not bool(re.search('[\u0400-\u04FF]', question)):
         params.append(':ru')
-    params.append(re.sub(r'\btrans\w*(\s+to(\s+\w+)?)?|\bперев\w+', '', question, flags=re.IGNORECASE).strip())
+    params.append(question)
     result = subprocess.run(params, stdout=subprocess.PIPE)
     return result.stdout.decode('utf-8')
 
