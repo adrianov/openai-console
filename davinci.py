@@ -7,6 +7,7 @@ import re
 import logging
 import openai
 import time
+import subprocess
 from sys import getsizeof
 from duckpy import Client
 from prompt_toolkit import PromptSession
@@ -31,10 +32,11 @@ def generate_response(prompt_text):
     return response
 
 def query_ai(prompt_text):
+    e = None
     for _ in range(3):
         try:
             completions = openai.Completion.create(
-                engine=MODEL_ENGINE, prompt=prompt_text, max_tokens=1024, n=1, temperature=0.5
+                engine=MODEL_ENGINE, prompt=prompt_text, max_tokens=1024, n=1, temperature=0.8
             )
             return completions.choices[0].text
         except openai.error.OpenAIError as e:
@@ -106,7 +108,6 @@ def is_program_installed(program_name):
     return shutil.which(program_name) is not None
 
 def translate(question):
-    import subprocess
     params = ['trans', '-b']
     question = re.sub(r'\b(trans|перев)\w*\s+', '', question, flags=re.IGNORECASE).strip()
     # If no Russian letters, translate to Russian
