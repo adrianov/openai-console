@@ -17,8 +17,8 @@ from pygments.lexers import get_lexer_by_name, guess_lexer
 from pygments.formatters.terminal import TerminalFormatter
 
 openai.api_key = os.environ.get("OPENAI_ACCESS_TOKEN")
-MODEL_ENGINE = "text-davinci-003"
-# MODEL_ENGINE = "code-davinci-002"
+MODEL_ENGINE = "gpt-3.5-turbo"
+#MODEL_ENGINE = "text-davinci-003"
 
 logging.basicConfig(filename=os.path.expanduser('~/davinci.log'), level=logging.INFO)
 
@@ -35,10 +35,10 @@ def query_ai(prompt_text):
     e = None
     for _ in range(3):
         try:
-            completions = openai.Completion.create(
-                engine=MODEL_ENGINE, prompt=prompt_text, max_tokens=1024, n=1, temperature=0.8
+            completions = openai.ChatCompletion.create(
+                model=MODEL_ENGINE, messages=[{"role":"user", "content": prompt_text}]
             )
-            return completions.choices[0].text
+            return completions.choices[0].message.content
         except openai.error.OpenAIError as e:
             if not isinstance(e, openai.error.RateLimitError):
                 raise e
